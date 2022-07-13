@@ -1,12 +1,22 @@
 {
-  "name": "websocket_noom",
+  "name": "noom",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Zoom Clone using WebRTC and WebSocket",
+  "license": "MIT",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "@babel/cli": "^7.18.6",
+    "@babel/core": "^7.18.6",
+    "@babel/node": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "pug": "^3.0.2",
+    "socket.io": "^4.5.1",
+    "ws": "^8.8.0"
+  }
 }
