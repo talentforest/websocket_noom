@@ -4,25 +4,24 @@ html(lang="en")
     meta(charset="UTF-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    link(rel="stylesheet", href="https://unpkg.com/mvp.css")
     title Noom
-  body 
-    header 
+    link(rel="stylesheet", href="https://unpkg.com/mvp.css")
+  body
+    header
       h1 Noom
     main
       div#welcome
-        form#name
-          input#nickname(placeholder="nickname", required, type="text")
-          input#room_name(placeholder="room name", required, type="text")
-          button Enter Room
-        h4 Open Rooms
-        ul
-      div#room
-        h3
-        ul
-        form#msg
-          input(placeholder="message", required, type="text")
-          button Send
-    script(src="/socket.io/socket.io.js")
-    script(src="/public/js/app.js")
-    
+        form
+          input(placeholder="room name", required, type="text")
+          button 방에 입장하기
+      div#call
+        div#myStream
+          video#myFace(autoplay, playsinline, muted, width="400", height="400")
+          button#mute Mute
+          div#buttons
+            button#camera Camera Off
+            select#cameras
+              option(value="device") 카메라 선택하기
+        video#peerFace(autoplay, playsinline, muted, width="400", height="400")
+    script(src="/socket.io/socket.io.js") 
+    script(src="/public/js/app.js")  
