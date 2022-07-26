@@ -104,6 +104,8 @@ camerasSelect.addEventListener("input", handleCameraChange);
 // Welcome Form (join a room)
 const welcome = document.getElementById("welcome");
 const welcomeForm = welcome.querySelector("form");
+const roomNameInput = document.getElementById("roomName");
+const nicknameInput = document.getElementById("nickname");
 
 async function initCall() {
   welcome.hidden = true;
@@ -114,21 +116,46 @@ async function initCall() {
 
 async function handleWelcomeSubmit(event) {
   event.preventDefault();
-  const input = welcomeForm.querySelector("input");
   await initCall();
-  socket.emit("join_room", input.value);
-  roomName = input.value;
-  input.value = "";
+  socket.emit("join_room", roomNameInput.value);
+  roomName = roomNameInput.value;
+  roomNameInput.value = "";
 }
 
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
+
+// Chat Part
+const chatBox = document.getElementById("chatBox");
+const chatInput = chatBox.querySelector("input");
+
+function addChatMessage(message) {
+  const ul = chatBox.querySelector("ul");
+  const li = document.createElement("li");
+
+  li.innerText = message;
+  ul.appendChild(li);
+
+  chatInput.value = "";
+}
+
+chatBox.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const message = chatInput.value;
+  addChatMessage(message);
+  if (myDataChannel) {
+    myDataChannel.send(message);
+  }
+});
 
 // Socket Code
 // peer A's code
 socket.on("welcome", async () => {
   myDataChannel = myPeerConnection.createDataChannel("chat");
-  myDataChannel.addEventListener("message", (event) => console.log(event.data));
+  myDataChannel.addEventListener("message", (event) =>
+    addChatMessage(event.data)
+  );
   console.log("made data channel");
+
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
   console.log("sent the offer");
@@ -140,7 +167,7 @@ socket.on("offer", async (offer) => {
   myPeerConnection.addEventListener("datachannel", (event) => {
     myDataChannel = event.channel;
     myDataChannel.addEventListener("message", (event) =>
-      console.log(event.data)
+      addChatMessage(event.data)
     );
   });
   console.log("received the offer");
