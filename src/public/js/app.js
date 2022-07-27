@@ -117,11 +117,12 @@ async function initCall() {
 async function handleWelcomeSubmit(event) {
   event.preventDefault();
   await initCall();
-  socket.emit("join_room", roomNameInput.value);
+  socket.emit("join_room", roomNameInput.value, nicknameInput.value);
   roomName = roomNameInput.value;
+  userNickname = nicknameInput.value;
+
   roomNameInput.value = "";
 }
-
 welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 
 // Chat Part
@@ -138,27 +139,29 @@ function addChatMessage(message) {
   chatInput.value = "";
 }
 
-chatBox.addEventListener("submit", (event) => {
+function handleSubmitMessage(event) {
   event.preventDefault();
   const message = chatInput.value;
-  addChatMessage(message);
+  addChatMessage(`${nicknameInput.value}: ${message}`);
   if (myDataChannel) {
-    myDataChannel.send(message);
+    myDataChannel.send(`${nicknameInput.value}: ${message}`);
   }
-});
+}
+
+chatBox.addEventListener("submit", handleSubmitMessage);
 
 // Socket Code
 // peer A's code
-socket.on("welcome", async () => {
+socket.on("welcome", async (nickname) => {
+  addChatMessage(`${nickname}님이 입장하셨습니다.`);
+
   myDataChannel = myPeerConnection.createDataChannel("chat");
-  myDataChannel.addEventListener("message", (event) =>
-    addChatMessage(event.data)
-  );
-  console.log("made data channel");
+  myDataChannel.addEventListener("message", (event) => {
+    addChatMessage(event.data);
+  });
 
   const offer = await myPeerConnection.createOffer();
   myPeerConnection.setLocalDescription(offer);
-  console.log("sent the offer");
   socket.emit("offer", offer, roomName);
 });
 
@@ -166,25 +169,22 @@ socket.on("welcome", async () => {
 socket.on("offer", async (offer) => {
   myPeerConnection.addEventListener("datachannel", (event) => {
     myDataChannel = event.channel;
-    myDataChannel.addEventListener("message", (event) =>
-      addChatMessage(event.data)
-    );
+    myDataChannel.addEventListener("message", (event) => {
+      addChatMessage(event.data);
+    });
   });
-  console.log("received the offer");
+
   myPeerConnection.setRemoteDescription(offer);
   const answer = await myPeerConnection.createAnswer();
   myPeerConnection.setLocalDescription(answer);
   socket.emit("answer", answer, roomName);
-  console.log("sent the answer");
 });
 
 socket.on("answer", (answer) => {
-  console.log("received the answer");
   myPeerConnection.setRemoteDescription(answer);
 });
 
 socket.on("ice", (ice) => {
-  console.log("receive the candidate");
   myPeerConnection.addIceCandidate(ice);
 });
 
@@ -211,7 +211,6 @@ function makeConnection() {
 }
 
 function handleIce(data) {
-  console.log("sent the candidate");
   socket.emit("ice", data.candidate, roomName);
 }
 

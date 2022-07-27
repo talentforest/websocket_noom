@@ -9,24 +9,35 @@ html(lang="en")
   body
     header
       h1 Noom
+      h3 좋아하는 사람과 얼굴 보며 대화를 나눠요. 👀
     main
       div#welcome
         form
+          span 닉네임
+          input#nickname(placeholder="nickname", type="text")
           span 방 이름
           input#roomName(placeholder="room name", required, type="text")
           button 방에 입장하기
       div#call
-        div#myStream
-          video#myFace(autoplay, playsinline, muted, width="400", height="400")
-          button#mute Mute
-          div#buttons
-            button#camera Camera Off
-            select#cameras
-              option(value="device") 카메라 선택하기
-        video#peerFace(autoplay, playsinline, muted, width="400", height="400")
-        form#chatBox
-          input(type="text", placeholder="write message")
-          button Send
-          ul
+        div
+          div#videoBox
+            div#streams
+              div#yourStream
+                span Your Video
+                video#peerFace(autoplay, playsinline, muted, width="300", height="230")
+              div#myStream
+                span My Video
+                video#myFace(autoplay, playsinline, muted, width="300", height="230")
+            div#buttons
+              button#mute Mute
+              button#camera Camera Off
+              select#cameras
+                option(value="device") 카메라 선택하기
+          form#chatBox
+            h4 Chat room between you and me 👫
+            ul
+            div
+              input(type="text", placeholder="write message")
+              button Send
     script(src="/socket.io/socket.io.js") 
     script(src="/public/js/app.js")  
