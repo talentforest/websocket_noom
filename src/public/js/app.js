@@ -102,12 +102,14 @@ cameraBtn.addEventListener("click", handleCameraClick);
 camerasSelect.addEventListener("input", handleCameraChange);
 
 // Welcome Form (join a room)
+const welcomeHeader = document.getElementById("welcomeHeader");
 const welcome = document.getElementById("welcome");
 const welcomeForm = welcome.querySelector("form");
 const roomNameInput = document.getElementById("roomName");
 const nicknameInput = document.getElementById("nickname");
 
 async function initCall() {
+  welcomeHeader.hidden = true;
   welcome.hidden = true;
   call.hidden = false;
   await getMedia();
@@ -128,21 +130,25 @@ welcomeForm.addEventListener("submit", handleWelcomeSubmit);
 // Chat Part
 const chatBox = document.getElementById("chatBox");
 const chatInput = chatBox.querySelector("input");
+const ul = chatBox.querySelector("ul");
 
-function addChatMessage(message) {
-  const ul = chatBox.querySelector("ul");
+function addChatMessage(message, peersChat) {
   const li = document.createElement("li");
 
   li.innerText = message;
   ul.appendChild(li);
 
   chatInput.value = "";
+  if (peersChat) {
+    li.className = "peersChat";
+  }
 }
 
 function handleSubmitMessage(event) {
   event.preventDefault();
   const message = chatInput.value;
   addChatMessage(`${nicknameInput.value}: ${message}`);
+
   if (myDataChannel) {
     myDataChannel.send(`${nicknameInput.value}: ${message}`);
   }
@@ -150,14 +156,22 @@ function handleSubmitMessage(event) {
 
 chatBox.addEventListener("submit", handleSubmitMessage);
 
+socket.on("enter", async (newCount) => {
+  const h5 = call.querySelector("h5");
+  h5.innerText = `Room ${roomName} (${newCount})`;
+});
+
 // Socket Code
 // peer A's code
 socket.on("welcome", async (nickname) => {
-  addChatMessage(`${nickname}님이 입장하셨습니다.`);
+  const span = document.createElement("span");
+  span.innerText = `${nickname}님이 입장하셨습니다.`;
+  ul.appendChild(span);
 
   myDataChannel = myPeerConnection.createDataChannel("chat");
   myDataChannel.addEventListener("message", (event) => {
-    addChatMessage(event.data);
+    peersChat = true;
+    addChatMessage(event.data, peersChat);
   });
 
   const offer = await myPeerConnection.createOffer();
@@ -170,7 +184,8 @@ socket.on("offer", async (offer) => {
   myPeerConnection.addEventListener("datachannel", (event) => {
     myDataChannel = event.channel;
     myDataChannel.addEventListener("message", (event) => {
-      addChatMessage(event.data);
+      peersChat = true;
+      addChatMessage(event.data, peersChat);
     });
   });
 
@@ -186,6 +201,28 @@ socket.on("answer", (answer) => {
 
 socket.on("ice", (ice) => {
   myPeerConnection.addIceCandidate(ice);
+});
+
+socket.on("left_room", (nickname, newCount) => {
+  const h5 = call.querySelector("h5");
+  h5.innerText = `Room ${roomName} (${newCount})`;
+
+  const span = document.createElement("span");
+  span.innerText = `${nickname}님이 퇴장하셨습니다.`;
+  ul.appendChild(span);
+});
+
+socket.on("room_change", (rooms) => {
+  const roomList = welcome.querySelector("ul");
+  roomList.innerHTML = "";
+  if (rooms.length === 0) {
+    return;
+  }
+  rooms.forEach((room) => {
+    const li = document.createElement("li");
+    li.innerText = room;
+    roomList.append(li);
+  });
 });
 
 // RTC Code

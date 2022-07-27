@@ -1,26 +1,43 @@
 body {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Roboto Slab", "Noto Serif KR";
   background-color: #dadff7;
-  margin: 0 70px;
+  margin: 0;
+}
+
+header {
+  margin: 10px auto 0;
+  padding-top: 30px;
+  height: 20vh;
 }
 
 h1 {
-  display: inline-block;
+  text-align: center;
   font-size: 30px;
   margin-right: 15px;
   color: rgb(180, 88, 255);
+  margin: 0;
 }
 
 h3 {
-  display: inline-block;
-  font-size: 16px;
+  text-align: center;
+  font-size: 18px;
+}
+
+main {
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 #welcome form {
+  width: 300px;
+  height: 400px;
+  margin: 0px auto;
   display: flex;
   flex-direction: column;
   background-color: rgb(252, 252, 252);
-  margin-bottom: 20px;
   padding: 20px;
   border-radius: 10px;
   box-sizing: border-box;
@@ -29,19 +46,20 @@ h3 {
 
 #welcome form span {
   color: rgb(180, 88, 255);
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  font-weight: 700;
 }
 
 #welcome input {
-  font-size: 18px;
   margin-bottom: 30px;
-  padding: 10px 5px;
+  padding: 12px 5px;
+  font-size: 20px;
   background-color: transparent;
   border: 1px solid #888;
   border-radius: 5px;
 }
 #welcome input:focus {
-  outline: none;
+  outline: 1px solid rgb(255, 228, 74);
 }
 
 #welcome button {
@@ -54,6 +72,11 @@ h3 {
   font-size: 18px;
   font-weight: 700;
   padding: 15px;
+}
+
+#welcome button:hover {
+  background-color: rgb(255, 228, 74);
+  color: rgb(180, 88, 255);
 }
 
 #room_list {
@@ -172,13 +195,30 @@ h3 {
   border-radius: 10px;
 }
 
+#chatBox ul > span {
+  width: fit-content;
+  padding: 5px 15px;
+  margin: 30px auto 10px;
+  border-radius: 30px;
+  background-color: blueviolet;
+  color: #fff;
+}
+
 #chatBox ul > li {
+  width: fit-content;
+  align-self: flex-end;
   font-size: 16px;
   border: 1px solid #dadff7;
   background-color: #dadff7;
   list-style: none;
   border-radius: 10px;
   padding: 5px 10px;
+}
+
+#chatBox ul > li.peersChat {
+  background-color: rgb(255, 255, 214);
+  width: fit-content;
+  align-self: flex-start;
 }
 
 #chatBox > div {
